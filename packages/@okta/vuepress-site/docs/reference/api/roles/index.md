@@ -14,11 +14,1064 @@ The Okta Administrator Roles API provides operations to manage administrative ro
 
 Explore the Administrator Roles API:  [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/4f1233beeef282acbcfb)
 
+## Custom role operations
+<ApiLifecycle access="beta" />
+These operations allow the creation and manipulation of custom roles as custom collections of [permissions](#permission-types).
+
+### Create role
+<ApiOperation method="post" url="/api/v1/iam/roles" />
+
+Creates a new role with a custom set of permissions
+
+#### Request parameters
+
+| Parameter   | Description                          | Param Type   | DataType                    | Required |
+| :---------- | :----------------------------------- | :----------- | :----------------------------------------------- | :------- |
+| label       | name given to new role               | Body         | String                                           | TRUE     |
+| description | description of the new role          | Body         | String                                           | TRUE     |
+| permissions | the permissions the new role grants  | Body         | Array of [Permission types](#permission-types)   | TRUE     |
+
+#### Response parameters
+
+Created custom [role](#custom-role-object)
+
+#### Request example
+
+```bash
+curl -v -X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "label": "UserCreator",
+      "description": "...",
+      "permissions" [
+        "okta.users.create",
+        "okta.users.read",
+        "okta.groups.read",
+        "okta.users.profile.manage"
+      ]
+    }' "https://${yourOktaDomain}/api/v1/iam/roles"
+```
+
+#### Response example
+
+```json
+{
+  "id": "cr0Yq6IJxGIr0ouum0g3",
+  "label": "UserCreator",
+  "description": "Create users",
+  "permissions": [
+    "okta.users.create",
+    "okta.users.read",
+    "okta.groups.read",
+    "okta.users.profile.manage"
+  ]
+}
+```
+
+### Get role
+<ApiOperation method="get" url="/api/v1/iam/roles/${roleIdOrName}" />
+
+Get a custom role by its id or label
+
+#### Request parameters
+
+| Parameter    | Description                          | Param Type   | DataType                    | Required |
+| :----------- | :----------------------------------- | :----------- | :----------------------------------------------- | :------- |
+| roleIdOrName | id or label of the role              | URL          | String                                           | TRUE     |
+
+#### Response parameters
+
+Requested custom [Role](#custom-role-object)
+
+#### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/roles/UserCreator"
+```
+
+#### Response example
+
+```json
+{
+  "id": "cr0Yq6IJxGIr0ouum0g3",
+  "label": "UserCreator",
+  "description": "Create users",
+  "permissions": [
+    "okta.users.create",
+    "okta.users.read",
+    "okta.groups.read",
+    "okta.users.profile.manage"
+  ]
+}
+```
+
+### List roles
+<ApiOperation method="get" url="/api/v1/iam/roles" />
+
+Get a paginated list of custom roles
+
+#### Response parameters
+
+A paginated list of [custom roles](#custom-role-object)
+
+#### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/roles"
+```
+
+#### Response example
+
+```json
+{
+  "roles": [
+    {
+      "id": "cr0Yq6IJxGIr0ouum0g3",
+      "label": "UserCreator",
+      "description": "..."
+    },
+    {
+      "id": "cr0Fw7HKcWIroo88m3r1",
+      "label": "GroupMembershipManager",
+      "description": "..."
+    }
+  ],
+  "_links": {
+    "next": {
+      "href": "http://${yourOktaDomain}/api/v1/iam/roles?after=cr0Fw7HKcWIroo88m3r1"
+    }
+  }
+}
+```
+
+### List permissions
+<ApiOperation method="get" url="/api/v1/iam/roles/${roleIdOrName}/permissions" />
+
+Get the list of permissions included in a custom role identified by its id or label
+
+#### Request parameters
+
+| Parameter    | Description                          | Param Type   | DataType                    | Required |
+| :----------- | :----------------------------------- | :----------- | :----------------------------------------------- | :------- |
+| roleIdOrName | id or label of the role              | URL          | String                                           | TRUE     |
+
+#### Response parameters
+
+An array of [Permission types](#permission-types) which make the role identified by `${roleIdOrName}` and a link to that role
+
+#### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3/permissions"
+```
+
+#### Response example
+
+```json
+{
+  "permissions": [
+    "okta.users.create",
+    "okta.users.read",
+    "okta.groups.read",
+    "okta.users.profile.manage"
+  ],
+  "_links": {
+    "role": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3"
+    }
+  }
+}
+```
+
+### Add permission
+<ApiOperation method="post" url="/api/v1/iam/roles/${roleIdOrName}/permissions/${permissionType}" />
+
+Add a new permission to an existing role
+
+#### Request parameters
+
+| Parameter      | Description                          | Param Type   | DataType                              | Required |
+| :------------- | :----------------------------------- | :----------- | :------------------------------------ | :------- |
+| roleIdOrName   | id or label of the role              | URL          | String                                | TRUE     |
+| permissionType | permission to add to the role        | URL          | [Permission type](#permission-types)) | TRUE     |
+
+#### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+#### Request example
+
+```bash
+curl -v -X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3/permissions/okta.users.manage"
+```
+
+#### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+### Delete permission
+<ApiOperation method="delete" url="/api/v1/iam/roles/${roleIdOrName}/permissions/${permissionType}" />
+
+Deletes a permission from an existing role
+
+#### Request parameters
+
+| Parameter      | Description                          | Param Type   | DataType                              | Required |
+| :------------- | :----------------------------------- | :----------- | :------------------------------------ | :------- |
+| roleIdOrName   | id or label of the role              | URL          | String                                | TRUE     |
+| permissionType | permission to remove from the role   | URL          | [Permission type](#permission-types)) | TRUE     |
+
+#### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+#### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3/permissions/okta.users.manage"
+```
+
+#### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+### Delete role
+<ApiOperation method="delete" url="/api/v1/iam/roles/${roleIdOrName}" />
+
+Deletes a custom role
+
+#### Request parameters
+
+| Parameter      | Description                          | Param Type   | DataType                              | Required |
+| :------------- | :----------------------------------- | :----------- | :------------------------------------ | :------- |
+| roleIdOrName   | id or label of the role              | URL          | String                                | TRUE     |
+
+#### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+#### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/roles/UserCreator"
+```
+
+#### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+## Resource-set operations
+<ApiLifecycle access="beta" />
+These operations allow the creation and manipulation of resource sets as custom collections of resources. Resource-sets are used to assign [custom roles](#custom-role-operations) to administrators.
+
+### Create resource set
+<ApiOperation method="post" url="/api/v1/iam/resource-sets" />
+
+Creates a new resource set with a custom set of resources
+
+#### Request parameters
+
+| Parameter   | Description                                                                    | Param Type   | DataType     | Required |
+| :---------- | :----------------------------------------------------------------------------- | :----------- | :----------- | :------- |
+| label       | Unique name given to new resource set                                          | Body         | String       | TRUE     |
+| description | description of the new resource set                                            | Body         | String       | TRUE     |
+| resources   | the endpoints referencing the resources to be included in the new resource set | Body         | Array of URL | FALSE    |
+
+#### Response parameters
+
+Created [resource set](#resource-set-object)
+
+#### Request example
+
+```bash
+curl -v -X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "label": "SF-IT-People",
+      "description": "People in the IT department of San Francisco",
+      "resources": [
+        "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3", // a group
+        "https://${yourOktaDomain}/api/v1/groups/00gu67DU2qNCjNZYO0g3/users", // users within a group
+        "https://${yourOktaDomain}/api/v1/users", // all users
+        "https://${yourOktaDomain}/api/v1/groups", // all groups
+      ]
+    }' "https://${yourOktaDomain}/api/v1/iam/resource-sets"
+```
+
+#### Response example
+
+```json
+{
+  "id": "iamoJDFKaJxGIr0oamd9g",
+  "label": "SF-IT-People",
+  "description": "People in the IT department of San Francisco",
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    },
+    "resources": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+    },
+    "bindings": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    }
+  }
+}
+```
+
+### Get resource set
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}" />
+
+Get a resource set by its id
+
+#### Request parameters
+
+| Parameter     | Description                          | Param Type   | DataType                    | Required |
+| :------------ | :----------------------------------- | :----------- | :----------------------------------------------- | :------- |
+| resourceSetId | Unique id of the resource set        | URL          | String                                           | TRUE     |
+
+#### Response parameters
+
+Requested [resource set](#resource-set-object)
+
+#### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+```
+
+#### Response example
+
+```json
+{
+  "id": "iamoJDFKaJxGIr0oamd9g",
+  "label": "SF-IT-People",
+  "description": "People in the IT department of San Francisco",
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    },
+    "resources": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+    },
+    "bindings": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    }
+  }
+}
+```
+
+### List resource sets
+<ApiOperation method="get" url="/api/v1/iam/resource-sets}" />
+
+Get a paginated list of resource sets
+
+#### Response parameters
+
+Paginated list of [resource sets](#resource-set-object)
+
+#### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets"
+```
+
+#### Response example
+
+```json
+{
+  "resource-sets": [
+    {
+      "id": "iamoJDFKaJxGIr0oamd9g"
+      "label": "SF-IT-1",
+      "description": "...",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+        },
+        "resources": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+        },
+        "bindings": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+        }
+      },
+      ...
+    ],
+      "_links": {
+        "next": {
+          "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets?after=iamoJDFKaJxGIr0oamd9g"
+        }
+      }
+    }
+  }
+}
+```
+
+### Update resource set
+<ApiOperation method="put" url="/api/v1/iam/resource-sets/${resourceSetId}" />
+
+Update label and description of a resource set
+
+#### Request parameters
+
+| Parameter     | Description                               | Param Type   | DataType     | Required |
+| :------------ | :---------------------------------------- | :----------- | :----------- | :------- |
+| resourceSetId | Unique id of the resource set             | URL          | String       | TRUE     |
+| label         | New unique name given to the resource set | Body         | String       | TRUE     |
+| description   | New description of the the resource set   | Body         | String       | TRUE     |
+
+#### Response parameters
+
+Updated [resource set](#resource-set-object)
+
+#### Request example
+
+```bash
+curl -v -X PUT \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "label": "SF-IT-Staff",
+      "description": "Staff in the IT department of San Francisco"
+    }' "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+```
+
+#### Response example
+
+```json
+{
+  "id": "iamoJDFKaJxGIr0oamd9g",
+  "label": "SF-IT-Staff",
+  "description": "Staff in the IT department of San Francisco",
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    },
+    "resources": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+    },
+    "bindings": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    }
+  }
+}
+```
+
+### Delete resource set
+<ApiOperation method="delete" url="/api/v1/iam/resource-sets/${resourceSetId}" />
+
+Deletes a resource set
+
+#### Request parameters
+
+| Parameter      | Description                          | Param Type   | DataType                              | Required |
+| :------------- | :----------------------------------- | :----------- | :------------------------------------ | :------- |
+| resourceSetId  | id of the resource set               | URL          | String                                | TRUE     |
+
+#### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+#### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+```
+
+#### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+### Resource operations
+These help adding, removing and listing of resources within a resource set
+
+#### Add more resources
+<ApiOperation method="patch" url="/api/v1/iam/resource-sets/${resourceSetId}/resources" />
+
+Add more resources to a resource set
+
+##### Request parameters
+
+| Parameter      | Description                                                                       | Param Type   | DataType     | Required |
+| :------------- | :----------------------------------------------------------------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set                                                         | URL          | String       | TRUE     |
+| additions      | the endpoints referencing the resources to be included in the new resource set | Body         | Array of URL | TRUE     |
+
+##### Response parameters
+
+The following `_links` are returned:
+* `resources` gets a paginable list of resources included in the set
+* `resource-set` gets the updated resource set
+
+##### Request example
+
+```bash
+curl -v -X PATCH \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "additions": [
+        "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3", // a group
+        "https://${yourOktaDomain}/api/v1/groups/00gu67DU2qNCjNZYO0g3/users", // users within a group
+      ]
+    }' "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+```
+
+##### Response example
+
+```json
+{
+  "_links": {
+    "resources": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+#### List resources
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}/resources" />
+
+List resources that make up a resource set
+
+##### Request parameters
+
+| Parameter   | Description                                                                       | Param Type   | DataType     | Required |
+| :------------- | :---------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set  | URL          | String       | TRUE     |
+
+##### Response parameters
+
+A paginated array of [resources](#resource-object)
+
+##### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+```
+
+##### Response example
+
+```json
+{
+  "resources": [
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    },
+    {
+      "id": "ire106riDrTYl4qA70g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00gu67DU2qNCjNZYO0g3/users"
+        }
+      }
+    },
+    {
+      "id": "irezvo4AwE2ngpMw40g3",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/users"
+        }
+      }
+    },
+    {
+      "id": "irezvn1ZZxLSIBM2J0g3",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups"
+        }
+      }
+    }
+  ],
+  "_links": {
+    "next": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources?after=irezvn1ZZxLSIBM2J0g3"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+#### Delete a resource
+<ApiOperation method="delete" url="/api/v1/iam/resource-sets/${resourceSetId}/resources/${resourceId}" />
+
+Remove a resource from a resource set
+
+##### Request parameters
+
+| Parameter      | Description                             | Param Type   | DataType     | Required |
+| :------------- | :-------------------------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set                  | URL          | String       | TRUE     |
+| resourceId     | id of the resource within resource set  | URL          | String       | TRUE     |
+
+`resourceId` is the id obtained when [listing resources within resource set](#list-resources). For example, if the resource object was:
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    }
+```
+`ire106sQKoHoXXsAe0g4` could be used as `resourceId` to remove the groups from list of resources in the set.
+
+##### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+##### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources/ire106sQKoHoXXsAe0g4"
+```
+
+##### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+## Custom role assignment operations
+<ApiLifecycle access="beta" />
+These operations allow the assignment and unassignment of custom roles. This is done by creating a binding.
+A binding is a map withe the key being a role and value being a list of users/groups that get the role.
+
+### Create a new binding
+<ApiOperation method="post" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings" />
+
+Assign a custom role by creating a binding between the role and the admin targetting an existing resource set.
+
+#### Request parameters
+
+| Parameter      | Description                                                   | Param Type    | DataType       | Required |
+| :------------- | :------------------------------------------------------------ | :------------ | :------------- | :------- |
+| role           | id of the role                                                | Body          | String         | TRUE     |
+| members        | hrefs pointing to user(s) and/or group(s) receiving the role  | Body          | Array of hrefs | TRUE     |
+
+#### Response parameters
+
+The following `_links` are returned:
+* `self` gets this role's binding within the resource set
+* `bindings` get a paginable list of role bindings in the resource set
+* `resource-set` gets resource set
+
+#### Request example
+
+```bash
+curl -v -X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "role": "cr0Yq6IJxGIr0ouum0g3",
+      "members": [
+        "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+      ]
+}' "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+```
+
+#### Response example
+
+```json
+{
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0Yq6IJxGIr0ouum0g3"
+    },
+    "bindings": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+### Add more members to a binding
+<ApiOperation method="patch" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}/members" />
+
+Add more members to a role binding already created in a resource set.
+
+#### Request parameters
+
+| Parameter      | Description                                                           | Param Type   | DataType       | Required |
+| :------------- | :-------------------------------------------------------------------- | :----------- | :------------- | :------- |
+| resourceSetId  | id of the target resource set                                         | URL          | String         | TRUE     |
+| roleId         | the id of the role to grant                                           | URL          | String         | TRUE     |
+| additions      | Array of hrefs pointing to user(s) and/or group(s) receiving the role | Body         | Array of hrefs | TRUE     |
+
+#### Response parameters
+
+The following `_links` are returned:
+* `self` gets this role's binding within the resource set
+* `bindings` get a paginable list of role bindings in the resource set
+* `resource-set` gets resource set
+
+#### Request example
+
+```bash
+curl -v -X PATCH \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "additions": [
+        "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3", // a group
+        "https://${yourOktaDomain}/api/v1/users/00u67DU2qNCjNZYO0g3", // a user
+      ]
+    }' "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members"
+```
+
+#### Response example
+
+```json
+{
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0Yq6IJxGIr0ouum0g3"
+    },
+    "bindings": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+### List members in a binding
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}/members" />
+
+Get a paginated list of members assigned to a role in a resource set
+
+#### Request parameters
+
+| Parameter      | Description                                                           | Param Type   | DataType       | Required |
+| :------------- | :-------------------------------------------------------------------- | :----------- | :------------- | :------- |
+| resourceSetId  | id of the target resource set                                         | URL          | String         | TRUE     |
+| roleId         | the id of the role to identify the binding                            | URL          | String         | TRUE     |
+
+#### Response parameters
+
+A paginated list of [members](#member-object).
+
+#### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members"
+```
+
+#### Response example
+
+```json
+{
+  "members": [
+    {
+      "id": "irb1qe6PGuMc7Oh8N0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/users/00uuk41Hjga5qGfQ30g3"
+        }
+      }
+    }, {
+      "id": "irb1q92TFAHzySt3x0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    }
+  ],
+  "_links": {
+    "binding": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/${resource-set-id}/bindings/${role-id-or-name}"
+    },
+    "next": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/${resource-set-id}/bindings/${role-id-or-name}/members?after=${last-member-id}"
+    }
+  }
+}
+```
+
+### Delete a members from a binding
+<ApiOperation method="delete" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}/members/${memberId}" />
+
+Get a paginated list of members assigned to a role in a resource set
+
+#### Request parameters
+
+| Parameter      | Description                                                           | Param Type   | DataType       | Required |
+| :------------- | :-------------------------------------------------------------------- | :----------- | :------------- | :------- |
+| resourceSetId  | id of the target resource set                                         | URL          | String         | TRUE     |
+| roleId         | the id of the role to identify the binding                            | URL          | String         | TRUE     |
+| memberId       | the id of the member within the binding                               | URL          | String         | TRUE     |
+
+
+`memberId` is the id obtained when [listing members within binding](#list-members-in-a-binding). For example, if the member object was:
+```json
+{
+  "id": "irb1qe6PGuMc7Oh8N0g4",
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/users/00uuk41Hjga5qGfQ30g3"
+    }
+  }
+}
+```
+`irb1qe6PGuMc7Oh8N0g4` could be used as `memberId` to remove the user from list of members in the binding.
+
+#### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+#### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members/irb1qe6PGuMc7Oh8N0g4"
+```
+
+#### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+### Retrieve bindings
+
+#### Get a binding by role id
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}" />
+
+Get a binding from a resource set by its role id
+
+##### Request parameters
+
+| Parameter      | Description             | Param Type   | DataType     | Required |
+| :------------- | :---------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set  | URL          | String       | TRUE     |
+| roleId         | id of the role          | URL          | String       | TRUE     |
+
+##### Response parameters
+
+The `id` of the role as well as the following `_links`:
+* `self` gets this role's binding within the resource set
+* `bindings` get a paginable list of role bindings in the resource set
+* `resource-set` gets resource set
+
+##### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4"
+```
+
+##### Response example
+
+```json
+{
+  "id": "cr0WxyzJxGIr0ouum0g4",
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4"
+    },
+    "members": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+#### Get all bindings in a resource set
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings" />
+
+Get all binding from a resource set
+
+##### Request parameters
+
+| Parameter      | Description             | Param Type   | DataType     | Required |
+| :------------- | :---------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set  | URL          | String       | TRUE     |
+
+##### Response parameters
+
+A paginated list of [bindings](#binding-object).
+
+##### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+```
+
+##### Response example
+
+```json
+{
+  "roles": [
+    {
+      "id": "cr0WxyzJxGIr0ouum0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/roles/cr0WxyzJxGIr0ouum0g4"
+        },
+        "members": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members"
+        }
+      }
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    },
+    "next": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings?after=cr0WxyzJxGIr0ouum0g4"
+    }
+  }
+}
+```
+
+### Delete a binding
+<ApiOperation method="delete" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}" />
+
+Delete a binding of a role from a resource set
+
+#### Request parameters
+
+| Parameter      | Description             | Param Type   | DataType     | Required |
+| :------------- | :---------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set  | URL          | String       | TRUE     |
+| roleId         | id of the role          | URL          | String       | TRUE     |
+
+#### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+#### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4"
+```
+
+##### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
 ## Role assignment operations
 
 ### Grant third-party admin status
-<ApiLifecycle access="ea" />
-
 <ApiOperation method="post" url="/api/v1/users/${userId}/roles?disableNotifications=true" />
 
 You can grant third-party admin status when you are adding a new admin using the API. You can do this by using an optional query parameter on the Administrator Roles API called `disableNotifications`.
@@ -58,7 +1111,6 @@ curl -v -X GET \
 ```
 
 ##### Response example
-
 
 ```json
 [
@@ -120,7 +1172,111 @@ curl -v -X GET \
     }
 ]
 ```
+##### Response example with custom roles
+<ApiLifecycle access="beta" />
 
+```json
+[
+    {
+        "id": "IFIFAX2BIRGUSTQ",
+        "label": "Application Administrator",
+        "type": "APP_ADMIN",
+        "status": "ACTIVE",
+        "created": "2019-02-06T16:17:40.000Z",
+        "lastUpdated": "2019-02-06T16:17:40.000Z",
+        "assignmentType": "USER",
+        "_links": {
+            "assignee": {
+                "href": "http://${yourOktaDomain}/api/v1/users/00ur32Vg0fvpyHZeQ0g3"
+            }
+        }
+    },
+    {
+        "id": "JBCUYUC7IRCVGS27IFCE2SKO",
+        "label": "Help Desk Administrator",
+        "type": "HELP_DESK_ADMIN",
+        "status": "ACTIVE",
+        "created": "2019-02-06T16:17:40.000Z",
+        "lastUpdated": "2019-02-06T16:17:40.000Z",
+        "assignmentType": "USER",
+        "_links": {
+            "assignee": {
+                "href": "http://${yourOktaDomain}/api/v1/users/00ur32Vg0fvpyHZeQ0g3"
+            }
+        }
+    },
+    {
+        "id": "ra125eqBFpETrMwu80g4",
+        "label": "Organization Administrator",
+        "type": "ORG_ADMIN",
+        "status": "ACTIVE",
+        "created": "2019-02-06T16:17:40.000Z",
+        "lastUpdated": "2019-02-06T16:17:40.000Z",
+        "assignmentType": "USER",
+        "_links": {
+            "assignee": {
+                "href": "http://${yourOktaDomain}/api/v1/users/00ur32Vg0fvpyHZeQ0g3"
+            }
+        }
+    },
+    {
+        "id": "gra25fapn1prGTBKV0g4",
+        "label": "API Access Management Administrator",
+        "type": "API_ACCESS_MANAGEMENT_ADMIN",
+        "status": "ACTIVE",
+        "created": "2019-02-06T16:20:57.000Z",
+        "lastUpdated": "2019-02-06T16:20:57.000Z",
+        "assignmentType": "GROUP",
+        "_links": {
+            "assignee": {
+                "href": "http://${yourOktaDomain}/api/v1/groups/00g1ousb3XCr9Dkr20g4"
+            }
+        }
+    },
+    { // NEW
+        "id": "cr0Yq6IJxGIr0ouum0g3", // NEW
+        "label": "UserCreatorRole",
+        "type": "CUSTOM", // NEW
+        "status": "ACTIVE",
+        "created": "2019-02-06T16:20:57.000Z",
+        "lastUpdated": "2019-02-06T16:20:57.000Z",
+        "assignmentType": "USER",
+        "resource-set": "iamoJDFKaJxGIr0oamd9g", // NEW, used to assign targets if needed
+        "_links": {
+            "assignee": {
+                "href": "http://${yourOktaDomain}/api/v1/groups/00g1ousb3XCr9Dkr20g4"
+            },
+            "resources": [{ // NEW, pointing to the policy containing the role assignment
+                "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+            }],
+            "permissions": { // NEW, pointing to permissions included with the role
+                "href": "http://${yourOktaDomain}/api/v1/iam/permission-sets/cr0Yq6IJxGIr0ouum0g3/permissions"
+            }
+        }
+    },
+    { // NEW
+        "id": "cr0Yq6IJxGIr0ouum0g3", // NEW
+        "label": "UserCreatorRole",
+        "type": "CUSTOM", // NEW
+        "status": "ACTIVE",
+        "created": "2019-02-06T16:20:57.000Z",
+        "lastUpdated": "2019-02-06T16:20:57.000Z",
+        "assignmentType": "USER",
+        "resource-set": "iamoakjsdQaJxGIr03int1o", // NEW, used to assign targets if needed
+        "_links": {
+            "assignee": {
+                "href": "http://${yourOktaDomain}/api/v1/groups/00u2yrsb3XCr8Yre20o4"
+            },
+            "resources": [{ // NEW, pointing to the policy containing the role assignment
+                "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoakjsdQaJxGIr03int1o/resources"
+            }],
+            "permissions": { // NEW, pointing to permissions included with the role
+                "href": "http://${yourOktaDomain}/api/v1/iam/permission-sets/cr0Yq6IJxGIr0ouum0g3/permissions"
+            }
+        }
+    }
+]
+```
 #### List Roles assigned to a Group
 
 
@@ -275,6 +1431,74 @@ curl -v -X POST \
 }
 ```
 
+#### Assign a Custom Role to a User or Group
+<ApiLifecycle access="beta" />
+
+The recommended way to assign a custom role is by using one of the [custom role assignment operations](#custom-role-assignment-operations). However, it is also possible to use the following to assign them too:
+<ApiOperation method="post" url="/api/v1/groups/${userId}/roles" />
+or to assign to a group:
+<ApiOperation method="post" url="/api/v1/groups/${groupId}/roles" />
+as long as the request body contains a custom `role` id and a `resource-set` id. Also, `type` must be `CUSTOM`
+
+##### Request parameters
+
+| Parameter       | Description                 | Param Type   | DataType                    | Required |
+| :-------------- | :-------------------------- | :----------- | :-------------------------- | :------- |
+| type            | type of Role to assign      | Body         | String literal: `CUSTOM`    | TRUE     |
+| role            | the id of the custom role   | Body         | String                      | TRUE     |
+| resource-set    | the id of the resource set  | Body         | String                      | TRUE     |
+
+##### Response parameters
+
+Assigned [Role](#role-object)
+
+##### Request example
+
+```bash
+curl -v -X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "type": "CUSTOM",
+      "role": "cr0Yq6IJxGIr0ouum0g3",
+      "resource-set": "iamoJDFKaJxGIr0oamd9g"
+}' "https://${yourOktaDomain}/api/v1/groups/00gsr2IepS8YhHRFf0g3/roles"
+```
+
+###### Response example
+
+```json
+{
+  "id": "irb1q92TFAHzySt3x0g4", // Note this is the custom role binding id
+  "role": "cr0WxyzJxGIr0ouum0g4", // NEW
+  "label": "UserCreatorRole",
+  "type": "CUSTOM", // NEW
+  "status": "ACTIVE",
+  "created": "2019-02-06T16:20:57.000Z",
+  "lastUpdated": "2019-02-06T16:20:57.000Z",
+  "assignmentType": "GROUP",
+  "resource-set": "iamoJDFKaJxGIr0oamd9g", // NEW, used to assign targets if needed
+  "_links": {
+    "assignee": {
+      "href": "http://${yourOktaDomain}/api/v1/groups/00gsr2IepS8YhHRFf0g3"
+    },
+    "resource-set": { // NEW, pointing to the policy containing the role assignment
+      "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    },
+    "binding": { // NEW, pointing to the specific binding which causes this assignment to exist
+      "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0Yq6IJxGIr0ouum0g3/members/irb1qe6PGuMc7Oh8N0g4"
+    }
+    "role": { // NEW, pointing to the custom role
+      "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3"
+    },
+    "permissions": { //NEW, pointing to the permissions associated with the custom role
+      "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3/permissions"
+    }
+  }
+}
+```
+
 ### Unassign a Role
 
 #### Unassign a Role from a User
@@ -357,6 +1581,33 @@ curl -v -X DELETE \
 HTTP/1.1 204 No Content
 ```
 
+#### Unassign a Custom Role from a User or Group
+<ApiLifecycle access="beta" />
+
+The recommended way to assign a custom role is by using one of the [custom role assignment operations](#custom-role-assignment-operations). However, it is also possible to use the following to unassign them too:
+<ApiOperation method="delete" url="/api/v1/groups/${groupId}/roles/${bindingId}" />
+or to assign to a group:
+<ApiOperation method="delete" url="/api/v1/groups/${groupId}/roles/${bindingId}" />
+but note that instead of `${roleId}` a `${bindingId}` must be provided.
+
+##### Request example
+
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/users/00u6fud33CXDPBXULRNG/roles/irb1q92TFAHzySt3x0g4"
+```
+
+###### Response example
+
+
+``` http
+HTTP/1.1 204 No Content
+```
+
 ## Role target operations
 
 Role targets are a way of defining permissions for admin roles into a smaller subset of Groups or Apps within your org. Targets limit an admin's permissions to a targeted area of the org. You can define admin roles to target Groups, Applications, and Application Instances.
@@ -365,6 +1616,8 @@ Role targets are a way of defining permissions for admin roles into a smaller su
 * **App targets:** Grant an admin permission to manage all instances of specified Apps. Target Apps are Okta catalog Apps. For example, there can be multiple configurations of an Okta catalog App, such as Salesforce or Facebook. When you add a Salesforce or Facebook App as a target, that grants the admin permission to manage all instances of those Apps and create new instances of them.
 * **App Instance targets:** Grant an admin permission to manage an instance of one App or instances of multiple Apps. App Instances are specific Apps that admins have created in their org. For example, there may be a Salesforce App configured differently for each sales region of a company. When you create an App Instance target, an admin may be assigned to manage only two instances of the configured Salesforce Apps and perhaps assigned to manage an instance of another configured App, such as Workday.
 
+> **Note:**<ApiLifecycle access="beta" /> Don't use these operations with a custom role id. Custom role assignments always require a target resource set. Use [custom role assignment operations](#custom-role-assignment-operations) or the backward-compatible [role assignment](#assign-a-custom-role-to-a-user-or-group) or [unassignment](#unassign-a-custom-role-from-a-user-or-group) operations.
+
 ### Group administrator role Group targets
 
 Assigns a Group admin role to a specific Group that grants the admin permission to manage only that Group. For example, an admin role may be assigned to manage only the IT group. The permissions for specifically what an admin can do within that Group depends on the admin role that they are assigned to. See [Administrators](https://help.okta.com/en/prod/okta_help_CSH.htm#ext_Administrators).
@@ -372,7 +1625,6 @@ Assigns a Group admin role to a specific Group that grants the admin permission 
 #### List Group targets for the Group administrator role
 
 ##### List Group targets for the Group administrator role given to a User
-
 
 <ApiOperation method="get" url="/api/v1/users/${userId}/roles/${roleId}/targets/groups" />
 
@@ -1334,6 +2586,15 @@ The Role object defines several **read-only** properties:
 | lastUpdated      | Timestamp when app user was last updated                | Date                                                                                                                                       | FALSE      | FALSE    | TRUE      |
 | status           | Status of role assignment                               | `ACTIVE`                                                                                                                                   | FALSE      | FALSE    | TRUE      |
 | type             | Type of Role                                            | See the [Role types](#role-types) table for a complete list. | FALSE      | FALSE    | TRUE      |
+| resource-set <ApiLifecycle access="beta" />    | The resource-set id in which the role is granted (only present for custom roles)        | String                                                                                                                                     | TRUE      | TRUE     | TRUE      |
+
+#### Role links
+<ApiLifecycle access="beta" />
+
+The following `_links` are returned:
+* `assignee`: gets the user or group through which this role is assigned
+* `resources`: (only for custom roles) gets a list of resources targetted by this assignment
+* `permissions`: (only for custom roles) gets a list of permissions granted through this assignment
 
 #### Role types
 
@@ -1341,18 +2602,19 @@ Some Roles support optional targets that constrain the Role to a specific set of
 
 Refer to the [product documentation](https://help.okta.com/en/prod/okta_help_CSH.htm#ext_Security_Administrators) for a complete definition of permissions granted to each Role.
 
-| Role type                     | Label                               | Optional targets                      |
-| :---------------------------- | :---------------------------------- | :------------------------------------ |
-| `API_ACCESS_MANAGEMENT_ADMIN` | API Access Management Administrator |                                       |
-| `APP_ADMIN`                   | Application Administrator           | Apps                                  |
-| `GROUP_MEMBERSHIP_ADMIN` <ApiLifecycle access="ea" /> | Group Membership Administrator | [Groups](/docs/reference/api/groups/)|
-| `HELP_DESK_ADMIN`             | Help Desk Administrator             | [Groups](/docs/reference/api/groups/) |
-| `MOBILE_ADMIN`                | Mobile Administrator                |                                       |
-| `ORG_ADMIN`                   | Organizational Administrator        |                                       |
-| `READ_ONLY_ADMIN`             | Read-Only Administrator             |                                       |
-| `REPORT_ADMIN`                | Report Administrator                |                                       |
-| `SUPER_ADMIN`                 | Super Administrator                 |                                       |
-| `USER_ADMIN`                  | Group Administrator                 | [Groups](/docs/reference/api/groups/) |
+| Role type                               | Label                               | Optional targets                      |
+| :-------------------------------------- | :---------------------------------- | :------------------------------------ |
+| `API_ACCESS_MANAGEMENT_ADMIN`           | API Access Management Administrator |                                       |
+| `APP_ADMIN`                             | Application Administrator           | Apps                                  |
+| `GROUP_MEMBERSHIP_ADMIN`                | Group Membership Administrator      | [Groups](/docs/reference/api/groups/) |
+| `HELP_DESK_ADMIN`                       | Help Desk Administrator             | [Groups](/docs/reference/api/groups/) |
+| `MOBILE_ADMIN`                          | Mobile Administrator                |                                       |
+| `ORG_ADMIN`                             | Organizational Administrator        |                                       |
+| `READ_ONLY_ADMIN`                       | Read-Only Administrator             |                                       |
+| `REPORT_ADMIN`                          | Report Administrator                |                                       |
+| `SUPER_ADMIN`                           | Super Administrator                 |                                       |
+| `USER_ADMIN`                            | Group Administrator                 | [Groups](/docs/reference/api/groups/) |
+| `CUSTOM` <ApiLifecycle access="beta" /> | Custom Label specified by client    | [Groups](/docs/reference/api/groups/) |
 
 `API_ACCESS MANAGEMENT_ADMIN` is available if the API Access Management feature is enabled. For a description of what the Role can do, see [API Access Management Best Practices](/docs/concepts/api-access-management/#recommended-practices-for-api-access-management).
 
@@ -1362,5 +2624,177 @@ A Role could either be assigned to the User directly or be assigned to a Group o
 
 | Assignment type     | Description                                                        |
 | :------------------ | :----------------------------------------------------------------- |
-| `GROUP`             | Role was assigned to an admin Group of which the User is a member |
+| `GROUP`             | Role was assigned to an admin Group of which the User is a member  |
 | `USER`              | Role was assigned to the User directly                             |
+
+## Custom role object
+<ApiLifecycle access="beta" />
+A custom role is a custom set of [permissions](#permission-types). A custom role is uniquely identified within your org by its id or label.
+
+### Custom role properties
+| Property         | Description                         | DataType                                       | Nullable   | Unique   | Read Only |
+| :--------------- | :---------------------------------- | :--------------------------------------------- | :--------- | :------- | :-------- |
+| id               | Unique key for the role             | String                                         | FALSE      | TRUE     | TRUE      |
+| label            | Display name of Role                | String                                         | FALSE      | TRUE     | FALSE     |
+| permissions      | the permissions the new role grants | Array of [Permission types](#permission-types) | FALSE      | FALSE    | FALSE     |
+
+#### Example
+
+```json
+{
+    "id": "cr0Yq6IJxGIr0ouum0g3",
+    "label": "UserCreator",
+    "description": "Create users",
+    "permissions": [
+      "okta.users.create",
+      "okta.users.read",
+      "okta.groups.read",
+      "okta.users.profile.manage"
+    ]
+}
+```
+### Permission types
+<ApiLifecycle access="beta" />
+
+Permissions can be used to build custom roles. Permissions to manage a resource also grant the viewing privileges for the the same resource so you won't need to assign them separately.
+
+User permissions are all only effective with respect to the group(s) to which the admin is granted role via the resource set assignments.
+
+| Assignment type                     | Description                                                                                                                         |
+| :---------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `okta.users.manage`                 | Allows the admin to create and manage users and read all profile and credential information for users                               |
+| `okta.users.create`                 | Allows the admin to create users. If admin also scoped to manage a group, can add the user to the group on creation and then manage |
+| `okta.users.read`                   | Allows the admin to read any user's profile and credential information                                                              |
+| `okta.users.credentials.manage`     | Allows the admin to manage only credential lifecycle operations for a user                                                          |
+| `okta.users.userprofile.manage`     | Allows the admin to only do operations on the User Object, including hidden and sensitive attributes                                |
+| `okta.users.lifecycle.manage`       | Allows the admin to only take any user lifecycle operations                                                                         |
+| `okta.users.groupMembership.manage` | Allows the admin to manage a user's group membership (also need `okta.groups.members.manage` to assign to a specific group)         |
+| `okta.groups.manage`                | Allows the admin to fully manage groups in your Okta organization                                                                   |
+| `okta.groups.create`                | Allows the admin to create groups                                                                                                   |
+| `okta.groups.members.manage`        | Allows the admin to only take member operations in a group in your Okta org                                                         |
+| `okta.groups.read`                  | Allows the admin to only read information about groups and their members in your Okta organization                                  |
+
+## Resource set object
+<ApiLifecycle access="beta" />
+
+A resource set is a collection of resources. Because there could be too many resources in a set, the object itself doesn't list the resources but provides a paginable link to fetch resources.
+
+| Property         | Description                                             | DataType                                                                                                      | Nullable   | Unique   | Read Only |
+| :--------------- | :------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------ | :--------- | :------- | :-------- |
+| id               | Unique key for the resource set                         | String                                                                                                        | FALSE      | TRUE     | TRUE      |
+| label            | Display name of the resource set                        | String                                                                                                        | FALSE      | TRUE     | FALSE     |
+| description      | A description of the resource set                       | String                                                                                                        | FALSE      | FALSE    | FALSE     |
+| _links           | Discoverable resources related to the resource set      | [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal-06)                                                | TRUE       | FALSE    | FALSE     |
+
+The following `_links` are returned:
+* `self` gets this resource set
+* `resources` gets a paginable list of resources included in this set
+* `bindings` gets a paginable list of admin role bindings assigned to this set
+
+### Resource object
+
+A resource has an id a link to the resource. Supported resources are:
+* Groups
+* All users within a group
+* All users within the org
+* All groups with the org
+The id of a resource is unique to the resource set whereas the link pointing to the resource is unique for the org. The same group if used in two resource sets will have distinct ids in each of resource sets but the same self link in both.
+
+#### Resource examples
+
+##### Group as resource
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    }
+```
+
+##### Users of a group as resource
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3/users"
+        }
+      }
+    }
+```
+
+##### All users as resource
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/users"
+        }
+      }
+    }
+```
+
+##### All groups as resource
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups"
+        }
+      }
+    }
+```
+### Binding object
+A binding represents the assignment of a [custom role](#custom-role-object) to a list of admins. Bindings are specific to a [resource set](#resource-set-object). There will be at max one binding object per role in a resource set.
+
+The admin list assigned to a role is made of [resource objects](#resource-object) representing either of the following types of admin assignments:
+* Directly assigned to the user
+* Assigned to a group
+
+| Property         | Description                                                     | DataType       | Nullable   | Unique   | Read Only |
+| :--------------- | :-------------------------------------------------------------- | :------------- | :--------- | :------- | :-------- |
+| id               | Id of the role granted in this binding                          | String         | FALSE      | FALSE    | FALSE     |
+| _links           | Discoverable resources related to the resource set              | [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal-06)                                                | TRUE       | FALSE    | FALSE     |
+
+The following `_links` are returned:
+* `self` gets this binding
+* `members` gets a paginable list of members included in this binding
+
+#### Member object
+
+A member has an id and a link to the resource representing the role grantee. Supported resources are:
+* Groups
+* Users
+
+The id of a member is unique to the binding whereas the link pointing to the resource is unique for the org. The same group if used in two bindings will have distinct ids in each but the same self link in both.
+
+##### Member examples
+
+###### Group as member
+```json
+    {
+      "id": "irb1q92TFAHzySt3x0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    }
+```
+
+##### User as member
+```json
+    {
+      "id": "irb1qe6PGuMc7Oh8N0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/users/00uuk41Hjga5qGfQ30g3"
+        }
+      }
+    }
+```
