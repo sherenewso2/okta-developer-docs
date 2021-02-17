@@ -300,7 +300,7 @@ HTTP/1.1 204 No Content
 
 ## Resource-set operations
 <ApiLifecycle access="beta" />
-These operations allow the creation and manipulation of resource sets as custom collections of resources. Resource-sets are used to assign [custom roles](#custom-role-operations) to administrators.
+These operations allow the creation and manipulation of resource sets as custom collections of resources. Resource-sets are used to assign [custom roles](#custom-role-operations) to administrators, scoped to the designated resources..
 
 ### Create resource set
 <ApiOperation method="post" url="/api/v1/iam/resource-sets" />
@@ -430,7 +430,7 @@ curl -v -X GET \
 {
   "resource-sets": [
     {
-      "id": "iamoJDFKaJxGIr0oamd9g"
+      "id": "iamoJDFKaJxGIr0oamd9g",
       "label": "SF-IT-1",
       "description": "...",
       "_links": {
@@ -510,7 +510,7 @@ curl -v -X PUT \
 ### Delete resource set
 <ApiOperation method="delete" url="/api/v1/iam/resource-sets/${resourceSetId}" />
 
-Deletes a resource set
+Deletes a resource set and all its associated bindings.
 
 #### Request parameters
 
@@ -715,7 +715,7 @@ HTTP/1.1 204 No Content
 ## Custom role assignment operations
 <ApiLifecycle access="beta" />
 These operations allow the assignment and unassignment of custom roles. This is done by creating a binding.
-A binding is a map withe the key being a role and value being a list of users/groups that get the role.
+A binding is represents an association of a principal, role and resource set uniquely identified by the `bindingId`.
 
 ### Create a new binding
 <ApiOperation method="post" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings" />
@@ -1234,7 +1234,8 @@ curl -v -X GET \
         }
     },
     { // NEW
-        "id": "cr0Yq6IJxGIr0ouum0g3", // NEW
+        "id": "irb1q92TFAHzySt3x0g4", // Note this is the custom role binding id
+        "role": "cr0Yq6IJxGIr0ouum0g3", // NEW, this is the custom role id
         "label": "UserCreatorRole",
         "type": "CUSTOM", // NEW
         "status": "ACTIVE",
@@ -1244,35 +1245,42 @@ curl -v -X GET \
         "resource-set": "iamoJDFKaJxGIr0oamd9g", // NEW, used to assign targets if needed
         "_links": {
             "assignee": {
-                "href": "http://${yourOktaDomain}/api/v1/groups/00g1ousb3XCr9Dkr20g4"
+                "href": "http://${yourOktaDomain}/api/v1/users/00u1gytb3XCr9Dkr18r2"
             },
-            "resources": [{ // NEW, pointing to the policy containing the role assignment
-                "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
-            }],
+            "resource-set": { // NEW, pointing to the resource set containing the role assignment
+                "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+            },
+            "role": { // NEW, pointing to the custom role
+              "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3"
+            },
             "permissions": { // NEW, pointing to permissions included with the role
                 "href": "http://${yourOktaDomain}/api/v1/iam/permission-sets/cr0Yq6IJxGIr0ouum0g3/permissions"
             }
         }
     },
     { // NEW
-        "id": "cr0Yq6IJxGIr0ouum0g3", // NEW
+        "id": "irb5e92YgBazyyQ3x1q5", // Note this is the custom role binding id
+        "role": "cr0Yq6IJxGIr0ouum0g3", // NEW, this is the custom role id
         "label": "UserCreatorRole",
         "type": "CUSTOM", // NEW
         "status": "ACTIVE",
         "created": "2019-02-06T16:20:57.000Z",
         "lastUpdated": "2019-02-06T16:20:57.000Z",
-        "assignmentType": "USER",
+        "assignmentType": "GROUP",
         "resource-set": "iamoakjsdQaJxGIr03int1o", // NEW, used to assign targets if needed
         "_links": {
-            "assignee": {
-                "href": "http://${yourOktaDomain}/api/v1/groups/00u2yrsb3XCr8Yre20o4"
-            },
-            "resources": [{ // NEW, pointing to the policy containing the role assignment
-                "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoakjsdQaJxGIr03int1o/resources"
-            }],
-            "permissions": { // NEW, pointing to permissions included with the role
-                "href": "http://${yourOktaDomain}/api/v1/iam/permission-sets/cr0Yq6IJxGIr0ouum0g3/permissions"
-            }
+          "assignee": {
+            "href": "http://${yourOktaDomain}/api/v1/groups/00g1ousb3XCr9Dkr20g4"
+          },
+          "resource-set": { // NEW, pointing to the resource set containing the role assignment
+            "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoakjsdQaJxGIr03int1o"
+          },
+          "role": { // NEW, pointing to the custom role
+            "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3"
+          },
+          "permissions": { // NEW, pointing to permissions included with the role
+            "href": "http://${yourOktaDomain}/api/v1/iam/permission-sets/cr0Yq6IJxGIr0ouum0g3/permissions"
+          }
         }
     }
 ]
@@ -2660,19 +2668,19 @@ Permissions can be used to build custom roles. Permissions to manage a resource 
 
 User permissions are all only effective with respect to the group(s) to which the admin is granted role via the resource set assignments.
 
-| Assignment type                     | Description                                                                                                                         |
-| :---------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `okta.users.manage`                 | Allows the admin to create and manage users and read all profile and credential information for users                               |
-| `okta.users.create`                 | Allows the admin to create users. If admin also scoped to manage a group, can add the user to the group on creation and then manage |
-| `okta.users.read`                   | Allows the admin to read any user's profile and credential information                                                              |
-| `okta.users.credentials.manage`     | Allows the admin to manage only credential lifecycle operations for a user                                                          |
-| `okta.users.userprofile.manage`     | Allows the admin to only do operations on the User Object, including hidden and sensitive attributes                                |
-| `okta.users.lifecycle.manage`       | Allows the admin to only take any user lifecycle operations                                                                         |
-| `okta.users.groupMembership.manage` | Allows the admin to manage a user's group membership (also need `okta.groups.members.manage` to assign to a specific group)         |
-| `okta.groups.manage`                | Allows the admin to fully manage groups in your Okta organization                                                                   |
-| `okta.groups.create`                | Allows the admin to create groups                                                                                                   |
-| `okta.groups.members.manage`        | Allows the admin to only take member operations in a group in your Okta org                                                         |
-| `okta.groups.read`                  | Allows the admin to only read information about groups and their members in your Okta organization                                  |
+| Permission type                     | Description                                                                                                                         | Applicable resource types                    |
+| :---------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- |
+| `okta.users.manage`                 | Allows the admin to create and manage users and read all profile and credential information for users                               | All users, all users within a specific group |
+| `okta.users.create`                 | Allows the admin to create users. If admin also scoped to manage a group, can add the user to the group on creation and then manage | All groups, a specific group                 |
+| `okta.users.read`                   | Allows the admin to read any user's profile and credential information                                                              | All users, all users within a specific group |
+| `okta.users.credentials.manage`     | Allows the admin to manage only credential lifecycle operations for a user                                                          | All users, all users within a specific group |
+| `okta.users.userprofile.manage`     | Allows the admin to only do operations on the User Object, including hidden and sensitive attributes                                | All users, all users within a specific group |
+| `okta.users.lifecycle.manage`       | Allows the admin to only take any user lifecycle operations                                                                         | All users, all users within a specific group |
+| `okta.users.groupMembership.manage` | Allows the admin to manage a user's group membership (also need `okta.groups.members.manage` to assign to a specific group)         | All users, all users within a specific group |
+| `okta.groups.manage`                | Allows the admin to fully manage groups in your Okta organization                                                                   | All groups, a specific group                 |
+| `okta.groups.create`                | Allows the admin to create groups                                                                                                   | All groups                                   |
+| `okta.groups.members.manage`        | Allows the admin to only take member operations in a group in your Okta org                                                         | All groups, a specific group                 |
+| `okta.groups.read`                  | Allows the admin to only read information about groups and their members in your Okta organization                                  | All groups, a specific group                 |
 
 ## Resource set object
 <ApiLifecycle access="beta" />
