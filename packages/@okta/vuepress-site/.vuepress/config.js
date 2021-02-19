@@ -348,7 +348,8 @@ module.exports = {
               '/docs/guides/sign-into-web-app-remediation/get-tokens/',
               '/docs/guides/sign-into-web-app-remediation/next-steps/',
               '/docs/reference/api/authenticators-admin/',
-              `/docs/concepts/role-assignment/`
+              `/docs/concepts/role-assignment/`,
+              `/docs/reference/api/iam-roles/`
 
           ]
         }
