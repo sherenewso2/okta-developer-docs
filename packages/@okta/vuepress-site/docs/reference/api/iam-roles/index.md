@@ -443,14 +443,28 @@ curl -v -X GET \
         "bindings": {
           "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
         }
-      },
-      ...
-    ],
+      }
+    },
+    {
+      "id": "iamoJDFKaJxGIr0oamd0q",
+      "label": "SF-IT-2",
+      "description": "...",
       "_links": {
-        "next": {
-          "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets?after=iamoJDFKaJxGIr0oamd9g"
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd0q"
+        },
+        "resources": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd0q/resources"
+        },
+        "bindings": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd0q/bindings"
         }
       }
+    }
+  ],
+  "_links": {
+    "next": {
+      "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets?after=iamoJDFKaJxGIr0oamd0q"
     }
   }
 }
@@ -1233,52 +1247,52 @@ curl -v -X GET \
             }
         }
     },
-    { // NEW
-        "id": "irb1q92TFAHzySt3x0g4", // Note this is the custom role binding id
-        "role": "cr0Yq6IJxGIr0ouum0g3", // NEW, this is the custom role id
+    {
+        "id": "irb1q92TFAHzySt3x0g4",
+        "role": "cr0Yq6IJxGIr0ouum0g3",
         "label": "UserCreatorRole",
-        "type": "CUSTOM", // NEW
+        "type": "CUSTOM",
         "status": "ACTIVE",
         "created": "2019-02-06T16:20:57.000Z",
         "lastUpdated": "2019-02-06T16:20:57.000Z",
         "assignmentType": "USER",
-        "resource-set": "iamoJDFKaJxGIr0oamd9g", // NEW, used to assign targets if needed
+        "resource-set": "iamoJDFKaJxGIr0oamd9g",
         "_links": {
             "assignee": {
                 "href": "http://${yourOktaDomain}/api/v1/users/00u1gytb3XCr9Dkr18r2"
             },
-            "resource-set": { // NEW, pointing to the resource set containing the role assignment
+            "resource-set": {
                 "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
             },
-            "role": { // NEW, pointing to the custom role
+            "role": {
               "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3"
             },
-            "permissions": { // NEW, pointing to permissions included with the role
+            "permissions": {
                 "href": "http://${yourOktaDomain}/api/v1/iam/permission-sets/cr0Yq6IJxGIr0ouum0g3/permissions"
             }
         }
     },
-    { // NEW
-        "id": "irb5e92YgBazyyQ3x1q5", // Note this is the custom role binding id
-        "role": "cr0Yq6IJxGIr0ouum0g3", // NEW, this is the custom role id
+    {
+        "id": "irb5e92YgBazyyQ3x1q5",
+        "role": "cr0Yq6IJxGIr0ouum0g3",
         "label": "UserCreatorRole",
-        "type": "CUSTOM", // NEW
+        "type": "CUSTOM",
         "status": "ACTIVE",
         "created": "2019-02-06T16:20:57.000Z",
         "lastUpdated": "2019-02-06T16:20:57.000Z",
         "assignmentType": "GROUP",
-        "resource-set": "iamoakjsdQaJxGIr03int1o", // NEW, used to assign targets if needed
+        "resource-set": "iamoakjsdQaJxGIr03int1o",
         "_links": {
           "assignee": {
             "href": "http://${yourOktaDomain}/api/v1/groups/00g1ousb3XCr9Dkr20g4"
           },
-          "resource-set": { // NEW, pointing to the resource set containing the role assignment
+          "resource-set": {
             "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoakjsdQaJxGIr03int1o"
           },
-          "role": { // NEW, pointing to the custom role
+          "role": {
             "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3"
           },
-          "permissions": { // NEW, pointing to permissions included with the role
+          "permissions": {
             "href": "http://${yourOktaDomain}/api/v1/iam/permission-sets/cr0Yq6IJxGIr0ouum0g3/permissions"
           }
         }
@@ -1478,29 +1492,26 @@ curl -v -X POST \
 
 ```json
 {
-  "id": "irb1q92TFAHzySt3x0g4", // Note this is the custom role binding id
-  "role": "cr0WxyzJxGIr0ouum0g4", // NEW
+  "id": "irb1q92TFAHzySt3x0g4",
+  "role": "cr0WxyzJxGIr0ouum0g4",
   "label": "UserCreatorRole",
-  "type": "CUSTOM", // NEW
+  "type": "CUSTOM",
   "status": "ACTIVE",
   "created": "2019-02-06T16:20:57.000Z",
   "lastUpdated": "2019-02-06T16:20:57.000Z",
   "assignmentType": "GROUP",
-  "resource-set": "iamoJDFKaJxGIr0oamd9g", // NEW, used to assign targets if needed
+  "resource-set": "iamoJDFKaJxGIr0oamd9g",
   "_links": {
     "assignee": {
       "href": "http://${yourOktaDomain}/api/v1/groups/00gsr2IepS8YhHRFf0g3"
     },
-    "resource-set": { // NEW, pointing to the policy containing the role assignment
+    "resource-set": {
       "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
     },
-    "binding": { // NEW, pointing to the specific binding which causes this assignment to exist
-      "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0Yq6IJxGIr0ouum0g3/members/irb1qe6PGuMc7Oh8N0g4"
-    }
-    "role": { // NEW, pointing to the custom role
+    "role": {
       "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3"
     },
-    "permissions": { //NEW, pointing to the permissions associated with the custom role
+    "permissions": {
       "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3/permissions"
     }
   }
@@ -2579,6 +2590,80 @@ HTTP/1.1 204 No Content
 }
 ```
 
+#### Sample Custom Role assigned to the User directly
+Note the following are different comparing to [an individually assigned standard role](#sample-role-assigned-to-the-user-directly)
+* The `id` field is present similarly with a different format but it has the same application
+* The `type` field for custom roles always has the value `CUSTOM`
+* The new `resource-set` field gives the id of the resource-set to which this assignment applies
+* The `_links` field has three new fields:
+** `resource-set` is the `GET` link to the resource set to which this assignment is granted
+** `role` is the `GET` link to the role this assignment grants
+** `permissions` is the `GET` link to the permissions this assignment grants
+```json
+    {
+        "id": "irb1q92TFAHzySt3x0g4",
+        "role": "cr0Yq6IJxGIr0ouum0g3",
+        "label": "UserCreatorRole",
+        "type": "CUSTOM",
+        "status": "ACTIVE",
+        "created": "2019-02-06T16:20:57.000Z",
+        "lastUpdated": "2019-02-06T16:20:57.000Z",
+        "assignmentType": "USER",
+        "resource-set": "iamoJDFKaJxGIr0oamd9g",
+        "_links": {
+            "assignee": {
+                "href": "http://${yourOktaDomain}/api/v1/users/00u1gytb3XCr9Dkr18r2"
+            },
+            "resource-set": {
+                "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+            },
+            "role": {
+              "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3"
+            },
+            "permissions": {
+                "href": "http://${yourOktaDomain}/api/v1/iam/permission-sets/cr0Yq6IJxGIr0ouum0g3/permissions"
+            }
+        }
+    }
+```
+
+#### Sample Custom Role assigned to the User through a Group membership
+Note the following are different comparing to [a group assigned standard role](#sample-role-assigned-to-the-user-through-a-group-membership)
+* The `id` field is present similarly with a different format but it has the same application
+* The `type` field for custom roles always has the value `CUSTOM`
+* The new `resource-set` field gives the id of the resource-set to which this assignment applies
+* The `_links` field has three new fields:
+  ** `resource-set` is the `GET` link to the resource set to which this assignment is granted
+  ** `role` is the `GET` link to the role this assignment grants
+  ** `permissions` is the `GET` link to the permissions this assignment grants
+```json
+{
+  "id": "irb5e92YgBazyyQ3x1q5",
+  "role": "cr0Yq6IJxGIr0ouum0g3",
+  "label": "UserCreatorRole",
+  "type": "CUSTOM",
+  "status": "ACTIVE",
+  "created": "2019-02-06T16:20:57.000Z",
+  "lastUpdated": "2019-02-06T16:20:57.000Z",
+  "assignmentType": "GROUP",
+  "resource-set": "iamoakjsdQaJxGIr03int1o",
+  "_links": {
+    "assignee": {
+      "href": "http://${yourOktaDomain}/api/v1/groups/00g1ousb3XCr9Dkr20g4"
+    },
+    "resource-set": {
+      "href": "http://${yourOktaDomain}/api/v1/iam/resource-sets/iamoakjsdQaJxGIr03int1o"
+    },
+    "role": {
+      "href": "http://${yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3"
+    },
+    "permissions": {
+      "href": "http://${yourOktaDomain}/api/v1/iam/permission-sets/cr0Yq6IJxGIr0ouum0g3/permissions"
+    }
+  }
+}
+```
+
 ### Role properties
 
 The Role object defines several **read-only** properties:
@@ -2601,8 +2686,9 @@ The Role object defines several **read-only** properties:
 
 The following `_links` are returned:
 * `assignee`: gets the user or group through which this role is assigned
-* `resources`: (only for custom roles) gets a list of resources targetted by this assignment
+* `resource-set`: (only for custom roles) gets the resource-set targetted by this assignment
 * `permissions`: (only for custom roles) gets a list of permissions granted through this assignment
+* `role`: (only for custom roles) gets the role granted through this assignment
 
 #### Role types
 
