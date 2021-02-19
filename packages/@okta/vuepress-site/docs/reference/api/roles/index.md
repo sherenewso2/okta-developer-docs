@@ -71,15 +71,15 @@ curl -v -X POST \
 ```
 
 ### Get role
-<ApiOperation method="get" url="/api/v1/iam/roles/${roleIdOrName}" />
+<ApiOperation method="get" url="/api/v1/iam/roles/${roleIdOrLabel}" />
 
 Get a custom role by its id or label
 
 #### Request parameters
 
-| Parameter    | Description                          | Param Type   | DataType                    | Required |
-| :----------- | :----------------------------------- | :----------- | :----------------------------------------------- | :------- |
-| roleIdOrName | id or label of the role              | URL          | String                                           | TRUE     |
+| Parameter     | Description                          | Param Type   | DataType                    | Required |
+| :------------ | :----------------------------------- | :----------- | :----------------------------------------------- | :------- |
+| roleIdOrLabel | id or label of the role              | URL          | String                                           | TRUE     |
 
 #### Response parameters
 
@@ -155,19 +155,19 @@ curl -v -X GET \
 ```
 
 ### List permissions
-<ApiOperation method="get" url="/api/v1/iam/roles/${roleIdOrName}/permissions" />
+<ApiOperation method="get" url="/api/v1/iam/roles/${roleIdOrLabel}/permissions" />
 
 Get the list of permissions included in a custom role identified by its id or label
 
 #### Request parameters
 
-| Parameter    | Description                          | Param Type   | DataType                    | Required |
-| :----------- | :----------------------------------- | :----------- | :----------------------------------------------- | :------- |
-| roleIdOrName | id or label of the role              | URL          | String                                           | TRUE     |
+| Parameter     | Description                          | Param Type   | DataType                    | Required |
+| :------------ | :----------------------------------- | :----------- | :----------------------------------------------- | :------- |
+| roleIdOrLabel | id or label of the role              | URL          | String                                           | TRUE     |
 
 #### Response parameters
 
-An array of [Permission types](#permission-types) which make the role identified by `${roleIdOrName}` and a link to that role
+An array of [Permission types](#permission-types) which make the role identified by `${roleIdOrLabel}` and a link to that role
 
 #### Request example
 
@@ -198,7 +198,7 @@ curl -v -X GET \
 ```
 
 ### Add permission
-<ApiOperation method="post" url="/api/v1/iam/roles/${roleIdOrName}/permissions/${permissionType}" />
+<ApiOperation method="post" url="/api/v1/iam/roles/${roleIdOrLabel}/permissions/${permissionType}" />
 
 Add a new permission to an existing role
 
@@ -206,7 +206,7 @@ Add a new permission to an existing role
 
 | Parameter      | Description                          | Param Type   | DataType                              | Required |
 | :------------- | :----------------------------------- | :----------- | :------------------------------------ | :------- |
-| roleIdOrName   | id or label of the role              | URL          | String                                | TRUE     |
+| roleIdOrLabel  | id or label of the role              | URL          | String                                | TRUE     |
 | permissionType | permission to add to the role        | URL          | [Permission type](#permission-types)) | TRUE     |
 
 #### Response parameters
@@ -232,7 +232,7 @@ HTTP/1.1 204 No Content
 ```
 
 ### Delete permission
-<ApiOperation method="delete" url="/api/v1/iam/roles/${roleIdOrName}/permissions/${permissionType}" />
+<ApiOperation method="delete" url="/api/v1/iam/roles/${roleIdOrLabel}/permissions/${permissionType}" />
 
 Deletes a permission from an existing role
 
@@ -240,7 +240,7 @@ Deletes a permission from an existing role
 
 | Parameter      | Description                          | Param Type   | DataType                              | Required |
 | :------------- | :----------------------------------- | :----------- | :------------------------------------ | :------- |
-| roleIdOrName   | id or label of the role              | URL          | String                                | TRUE     |
+| roleIdOrLabel  | id or label of the role              | URL          | String                                | TRUE     |
 | permissionType | permission to remove from the role   | URL          | [Permission type](#permission-types)) | TRUE     |
 
 #### Response parameters
@@ -266,15 +266,15 @@ HTTP/1.1 204 No Content
 ```
 
 ### Delete role
-<ApiOperation method="delete" url="/api/v1/iam/roles/${roleIdOrName}" />
+<ApiOperation method="delete" url="/api/v1/iam/roles/${roleIdOrLabel}" />
 
 Deletes a custom role
 
 #### Request parameters
 
-| Parameter      | Description                          | Param Type   | DataType                              | Required |
-| :------------- | :----------------------------------- | :----------- | :------------------------------------ | :------- |
-| roleIdOrName   | id or label of the role              | URL          | String                                | TRUE     |
+| Parameter       | Description                          | Param Type   | DataType                              | Required |
+| :-------------- | :----------------------------------- | :----------- | :------------------------------------ | :------- |
+| roleIdOrLabel   | id or label of the role              | URL          | String                                | TRUE     |
 
 #### Response parameters
 
