@@ -2596,9 +2596,9 @@ Note the following are different comparing to [an individually assigned standard
 * The `type` field for custom roles always has the value `CUSTOM`
 * The new `resource-set` field gives the id of the resource-set to which this assignment applies
 * The `_links` field has three new fields:
-** `resource-set` is the `GET` link to the resource set to which this assignment is granted
-** `role` is the `GET` link to the role this assignment grants
-** `permissions` is the `GET` link to the permissions this assignment grants
+  * `resource-set` is the `GET` link to the resource set to which this assignment is granted
+  * `role` is the `GET` link to the role this assignment grants
+  * `permissions` is the `GET` link to the permissions this assignment grants
 ```json
     {
         "id": "irb1q92TFAHzySt3x0g4",
@@ -2633,9 +2633,9 @@ Note the following are different comparing to [a group assigned standard role](#
 * The `type` field for custom roles always has the value `CUSTOM`
 * The new `resource-set` field gives the id of the resource-set to which this assignment applies
 * The `_links` field has three new fields:
-  ** `resource-set` is the `GET` link to the resource set to which this assignment is granted
-  ** `role` is the `GET` link to the role this assignment grants
-  ** `permissions` is the `GET` link to the permissions this assignment grants
+  * `resource-set` is the `GET` link to the resource set to which this assignment is granted
+  * `role` is the `GET` link to the role this assignment grants
+  * `permissions` is the `GET` link to the permissions this assignment grants
 ```json
 {
   "id": "irb5e92YgBazyyQ3x1q5",
