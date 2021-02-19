@@ -347,7 +347,9 @@ module.exports = {
               '/docs/guides/sign-into-web-app-remediation/handle-remediation/',
               '/docs/guides/sign-into-web-app-remediation/get-tokens/',
               '/docs/guides/sign-into-web-app-remediation/next-steps/',
-              '/docs/reference/api/authenticators-admin/'
+              '/docs/reference/api/authenticators-admin/',
+              `/docs/concepts/role-assignment/`
+
           ]
         }
       ]
