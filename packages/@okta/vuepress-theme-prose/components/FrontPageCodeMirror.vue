@@ -31,11 +31,11 @@ export default {
   data() {
     return {
       widgetCode: `
-// Uses okta-signin-widget version 5.2.0
+// Uses okta-signin-widget version -=OKTA_REPLACE_WITH_WIDGET_VERSION=-
 
 var widget = new OktaSignIn({
   baseUrl: "{{yourOktaDomain}}",
-  logo: "/sites/all/themes/developer/owb/alliance.png",
+  logo: "/alliance.png",
   i18n: {
     // Overriding English properties
     en: {
